@@ -1,3 +1,4 @@
+import sys
 import json
 from flask import Flask, render_template, request, redirect, flash, url_for
 
@@ -15,7 +16,7 @@ def loadCompetitions():
 
 
 app = Flask(__name__)
-app.secret_key = 'something_special'
+app.config.from_pyfile('config.py')
 
 competitions = loadCompetitions()
 clubs = loadClubs()
@@ -63,5 +64,12 @@ def logout():
     return redirect(url_for('index'))
 
 
+def main(argv):
+    kwargs = dict()
+    if "debug" in argv:
+        kwargs['debug'] = True
+    app.run(**kwargs)
+
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    main(sys.argv[1:])
