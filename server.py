@@ -16,6 +16,30 @@ def loadCompetitions():
         return competitions_started(listOfCompetitions)
 
 
+def first(elements):
+    """Returns the first element of a given iterable.
+    If the element is empty, it returns the empty element.
+    If not itable it raise an exception.
+    """
+    try:
+        return next(iter(elements))
+    except TypeError as e:
+        raise Exception(e)
+    except StopIteration:
+        return elements
+
+
+def filter_list_of_dict(list_of_dict, **kwargs):
+    """Filter list of dictionaries based on the given kwargs arguments"""
+    return [n for n in list_of_dict
+            if all(n.get(k) == v for k, v in kwargs.items())]
+
+
+def get_from_list_of_dict(list_of_dict, **kwargs):
+    """Get the first element of a list of dictionaries filtered by kwargs arguments."""
+    return first(filter_list_of_dict(list_of_dict, **kwargs))
+
+
 def competitions_started(competitions):
     now = datetime.now()
     for comp in competitions:
@@ -39,7 +63,7 @@ def index():
 @app.route('/showSummary', methods=['POST'])
 def showSummary():
     try:
-        club = [club for club in clubs if club['email'] == request.form['email']][0]
+        club = get_from_list_of_dict(clubs, **request.form)
     except IndexError:
         flash("We can't find the email address")
         return render_template('index.html')
@@ -48,8 +72,8 @@ def showSummary():
 
 @app.route('/book/<competition>/<club>')
 def book(competition, club):
-    foundClub = [c for c in clubs if c['name'] == club][0]
-    foundCompetition = [c for c in competitions if c['name'] == competition][0]
+    foundClub = get_from_list_of_dict(clubs, **{'name': club})
+    foundCompetition = get_from_list_of_dict(competitions, **{'name': competition})
     if foundClub and foundCompetition:
         return render_template('booking.html', club=foundClub,
                                competition=foundCompetition)
@@ -60,9 +84,9 @@ def book(competition, club):
 
 @app.route('/purchasePlaces', methods=['POST'])
 def purchasePlaces():
-    competition = [c for c in competitions if c['name'] == request.form['competition']][
-        0]
-    club = [c for c in clubs if c['name'] == request.form['club']][0]
+    competition = get_from_list_of_dict(competitions,
+                                        name=request.form['competition'])
+    club = get_from_list_of_dict(clubs, name=request.form['club'])
     placesRequired = int(request.form['places'])
 
     if placesRequired > 12:
