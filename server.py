@@ -62,9 +62,8 @@ def index():
 
 @app.route('/showSummary', methods=['POST'])
 def showSummary():
-    try:
-        club = get_from_list_of_dict(clubs, **request.form)
-    except IndexError:
+    club = get_from_list_of_dict(clubs, **request.form)
+    if not club:
         flash("We can't find the email address")
         return render_template('index.html')
     return render_template('welcome.html', club=club, competitions=competitions)
