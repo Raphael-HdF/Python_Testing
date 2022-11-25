@@ -9,12 +9,10 @@ def loadClubs():
         listOfClubs = json.load(c)['clubs']
         return listOfClubs
 
-
 def loadCompetitions():
     with open('competitions.json') as comps:
         listOfCompetitions = json.load(comps)['competitions']
         return competitions_started(listOfCompetitions)
-
 
 def first(elements):
     """Returns the first element of a given iterable.
@@ -24,21 +22,18 @@ def first(elements):
     try:
         return next(iter(elements))
     except TypeError as e:
-        raise Exception(e)
+        raise TypeError(e)
     except StopIteration:
         return elements
-
 
 def filter_list_of_dict(list_of_dict, **kwargs):
     """Filter list of dictionaries based on the given kwargs arguments"""
     return [n for n in list_of_dict
             if all(n.get(k) == v for k, v in kwargs.items())]
 
-
 def get_from_list_of_dict(list_of_dict, **kwargs):
     """Get the first element of a list of dictionaries filtered by kwargs arguments."""
     return first(filter_list_of_dict(list_of_dict, **kwargs))
-
 
 def competitions_started(competitions):
     now = datetime.now()
@@ -47,18 +42,15 @@ def competitions_started(competitions):
         comp['started'] = True if date_to_check < now else False
     return competitions
 
-
 app = Flask(__name__)
 app.config.from_pyfile('config.py')
 
 competitions = loadCompetitions()
 clubs = loadClubs()
 
-
 @app.route('/')
 def index():
     return render_template('index.html')
-
 
 @app.route('/showSummary', methods=['POST'])
 def showSummary():
@@ -67,7 +59,6 @@ def showSummary():
         flash("We can't find the email address")
         return render_template('index.html')
     return render_template('welcome.html', club=club, competitions=competitions)
-
 
 @app.route('/book/<competition>/<club>')
 def book(competition, club):
@@ -79,7 +70,6 @@ def book(competition, club):
     else:
         flash("Something went wrong-please try again")
         return render_template('welcome.html', club=club, competitions=competitions)
-
 
 @app.route('/purchasePlaces', methods=['POST'])
 def purchasePlaces():
@@ -107,16 +97,13 @@ def purchasePlaces():
     flash('Great-booking complete!')
     return render_template('welcome.html', club=club, competitions=competitions)
 
-
 @app.route('/club-points')
 def club_points():
     return render_template('points.html', clubs=clubs)
 
-
 @app.route('/logout')
 def logout():
     return redirect(url_for('index'))
-
 
 def main(argv):
     kwargs = dict()

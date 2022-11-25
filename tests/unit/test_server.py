@@ -1,0 +1,178 @@
+import datetime as dt
+import pytest
+
+from server import *
+
+
+class TestGroup:
+
+    @pytest.fixture
+    def clubs(self):
+        return [
+            {
+                "name": "Simply Lift",
+                "email": "john@simplylift.co",
+                "points": "12"
+            },
+            {
+                "name": "Iron Temple",
+                "email": "admin@irontemple.com",
+                "points": "4"
+            },
+            {
+                "name": "She Lifts",
+                "email": "kate@shelifts.co.uk",
+                "points": "12"
+            }
+        ]
+
+    @pytest.fixture
+    def competitions(self):
+        now = dt.datetime.now()
+        return [
+            {
+                "name": "Spring Festival",
+                "date": dt.datetime.strftime(now + dt.timedelta(days=-30), '%Y-%m-%d '
+                                                                           '%H:%M:%S'),
+                "numberOfPlaces": "25"
+            },
+            {
+                "name": "Fall Classic",
+                "date": dt.datetime.strftime(now + dt.timedelta(days=-15), '%Y-%m-%d '
+                                                                           '%H:%M:%S'),
+                "numberOfPlaces": "13"
+            },
+            {
+                "name": "La compete",
+                "date": dt.datetime.strftime(now + dt.timedelta(days=30), '%Y-%m-%d '
+                                                                           '%H:%M:%S'),
+                "numberOfPlaces": "55"
+            }
+        ]
+
+    # @pytest.fixture
+    # def open(self):
+    #     """This fixture will only be available within the scope of TestGroup"""
+    #     return {"clubs": [
+    #         {
+    #             "name": "Simply Lift",
+    #             "email": "john@simplylift.co",
+    #             "points": "13"
+    #         },
+    #         {
+    #             "name": "Iron Temple",
+    #             "email": "admin@irontemple.com",
+    #             "points": "4"
+    #         },
+    #         {"name": "She Lifts",
+    #          "email": "kate@shelifts.co.uk",
+    #          "points": "12"
+    #          }
+    #     ]}
+
+    def test_loadClubs(self, mocker):
+        file = {"clubs": [
+            {
+                "name": "Simply Lift",
+                "email": "john@simplylift.co",
+                "points": "13"
+            },
+            {
+                "name": "Iron Temple",
+                "email": "admin@irontemple.com",
+                "points": "4"
+            },
+            {"name": "She Lifts",
+             "email": "kate@shelifts.co.uk",
+             "points": "12"
+             }
+        ]}
+
+        expected_value = [
+            {
+                "name": "Simply Lift",
+                "email": "john@simplylift.co",
+                "points": "13"
+            },
+            {
+                "name": "Iron Temple",
+                "email": "admin@irontemple.com",
+                "points": "4"
+            },
+            {"name": "She Lifts",
+             "email": "kate@shelifts.co.uk",
+             "points": "12"
+             }
+        ]
+        with mocker.patch('open', return_value=file):
+            assert loadClubs() == expected_value
+
+    def test_filter_list_of_dict(self, clubs):
+        expected_value = [
+            {
+                "name": "Simply Lift",
+                "email": "john@simplylift.co",
+                "points": "12"
+            },
+            {
+                "name": "She Lifts",
+                "email": "kate@shelifts.co.uk",
+                "points": "12"
+            }
+        ]
+        assert filter_list_of_dict(clubs, points="12") == expected_value
+
+        expected_value = []
+        assert filter_list_of_dict(clubs, points="2") == expected_value
+
+    def test_get_from_list_of_dict(self, clubs):
+        expected_value = {
+            "name": "She Lifts",
+            "email": "kate@shelifts.co.uk",
+            "points": "12"
+        }
+        assert get_from_list_of_dict(clubs,
+                                     email="kate@shelifts.co.uk") == expected_value
+
+        expected_value = []
+        assert get_from_list_of_dict(clubs,
+                                     email="dont_exist@test.fr") == expected_value
+
+    def test_first(self):
+        iterable = [1, 2, 3]
+        assert first(iterable) == 1
+
+        iterable = []
+        assert first(iterable) == []
+
+        iterable = 555
+        with pytest.raises(TypeError):
+            first(iterable)
+
+    def test_competitions_started(self, competitions):
+        now = dt.datetime.now()
+        expected_value = [
+            {
+                "name": "Spring Festival",
+                "date": dt.datetime.strftime(now + dt.timedelta(days=-30), '%Y-%m-%d '
+                                                                           '%H:%M:%S'),
+                "numberOfPlaces": "25",
+                "started": True,
+            },
+            {
+                "name": "Fall Classic",
+                "date": dt.datetime.strftime(now + dt.timedelta(days=-15), '%Y-%m-%d '
+                                                                           '%H:%M:%S'),
+                "numberOfPlaces": "13",
+                "started": True,
+            },
+            {
+                "name": "La compete",
+                "date": dt.datetime.strftime(now + dt.timedelta(days=30), '%Y-%m-%d '
+                                                                           '%H:%M:%S'),
+                "numberOfPlaces": "55",
+                "started": False,
+            }
+        ]
+
+        assert competitions_started(competitions) == expected_value
