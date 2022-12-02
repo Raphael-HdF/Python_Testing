@@ -105,12 +105,14 @@ def club_points():
 def logout():
     return redirect(url_for('index'))
 
-def main(argv):
+def main(argv=[]):
     kwargs = dict()
     if "debug" in argv:
-        kwargs['debug'] = True
-    app.run(**kwargs)
+        app.config["debug"] = True
+
+    return app
 
 
 if __name__ == "__main__":
-    main(sys.argv[1:])
+    app = main(sys.argv[1:])
+    app.run()

@@ -50,28 +50,10 @@ class TestGroup:
             }
         ]
 
-    # @pytest.fixture
-    # def open(self):
-    #     """This fixture will only be available within the scope of TestGroup"""
-    #     return {"clubs": [
-    #         {
-    #             "name": "Simply Lift",
-    #             "email": "john@simplylift.co",
-    #             "points": "13"
-    #         },
-    #         {
-    #             "name": "Iron Temple",
-    #             "email": "admin@irontemple.com",
-    #             "points": "4"
-    #         },
-    #         {"name": "She Lifts",
-    #          "email": "kate@shelifts.co.uk",
-    #          "points": "12"
-    #          }
-    #     ]}
-
-    def test_loadClubs(self, mocker):
-        file = {"clubs": [
+    @pytest.fixture
+    def mocker_open_clubs(self, mocker):
+        # Read a mocked /etc/release file
+        file = '''{"clubs": [
             {
                 "name": "Simply Lift",
                 "email": "john@simplylift.co",
@@ -86,7 +68,11 @@ class TestGroup:
              "email": "kate@shelifts.co.uk",
              "points": "12"
              }
-        ]}
+        ]}'''
+        mocked_etc_release_data = mocker.mock_open(read_data=file)
+        mocker.patch("builtins.open", mocked_etc_release_data)
+
+    def test_loadClubs(self, mocker_open_clubs):
 
         expected_value = [
             {
@@ -104,8 +90,8 @@ class TestGroup:
              "points": "12"
              }
         ]
-        with mocker.patch('open', return_value=file):
-            assert loadClubs() == expected_value
+
+        assert loadClubs() == expected_value
 
     def test_filter_list_of_dict(self, clubs):
         expected_value = [
