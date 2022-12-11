@@ -4,8 +4,7 @@ import pytest
 from server import *
 
 
-class TestGroup:
-
+class TestFixture:
     @pytest.fixture
     def clubs(self):
         return [
@@ -45,10 +44,13 @@ class TestGroup:
             {
                 "name": "La compete",
                 "date": dt.datetime.strftime(now + dt.timedelta(days=30), '%Y-%m-%d '
-                                                                           '%H:%M:%S'),
+                                                                          '%H:%M:%S'),
                 "numberOfPlaces": "55"
             }
         ]
+
+
+class TestGroup(TestFixture):
 
     @pytest.fixture
     def mocker_open_clubs(self, mocker):
@@ -73,7 +75,6 @@ class TestGroup:
         mocker.patch("builtins.open", mocked_etc_release_data)
 
     def test_loadClubs(self, mocker_open_clubs):
-
         expected_value = [
             {
                 "name": "Simply Lift",
@@ -155,7 +156,7 @@ class TestGroup:
             {
                 "name": "La compete",
                 "date": dt.datetime.strftime(now + dt.timedelta(days=30), '%Y-%m-%d '
-                                                                           '%H:%M:%S'),
+                                                                          '%H:%M:%S'),
                 "numberOfPlaces": "55",
                 "started": False,
             }
