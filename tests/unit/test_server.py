@@ -11,7 +11,7 @@ class TestFixture:
             {
                 "name": "Simply Lift",
                 "email": "john@simplylift.co",
-                "points": "12"
+                "points": "15"
             },
             {
                 "name": "Iron Temple",
@@ -49,6 +49,33 @@ class TestFixture:
             }
         ]
 
+    @pytest.fixture
+    def competitions_started(self):
+        now = dt.datetime.now()
+        return [
+            {
+                "name": "Spring Festival",
+                "date": dt.datetime.strftime(now + dt.timedelta(days=-30), '%Y-%m-%d '
+                                                                           '%H:%M:%S'),
+                "numberOfPlaces": "25",
+                "started": True
+            },
+            {
+                "name": "Fall Classic",
+                "date": dt.datetime.strftime(now + dt.timedelta(days=-15), '%Y-%m-%d '
+                                                                           '%H:%M:%S'),
+                "numberOfPlaces": "13",
+                "started": True
+            },
+            {
+                "name": "La compete",
+                "date": dt.datetime.strftime(now + dt.timedelta(days=30), '%Y-%m-%d '
+                                                                          '%H:%M:%S'),
+                "numberOfPlaces": "55",
+                "started": False
+            }
+        ]
+
 
 class TestGroup(TestFixture):
 
@@ -59,7 +86,7 @@ class TestGroup(TestFixture):
             {
                 "name": "Simply Lift",
                 "email": "john@simplylift.co",
-                "points": "13"
+                "points": "15"
             },
             {
                 "name": "Iron Temple",
@@ -79,7 +106,7 @@ class TestGroup(TestFixture):
             {
                 "name": "Simply Lift",
                 "email": "john@simplylift.co",
-                "points": "13"
+                "points": "15"
             },
             {
                 "name": "Iron Temple",
@@ -96,11 +123,6 @@ class TestGroup(TestFixture):
 
     def test_filter_list_of_dict(self, clubs):
         expected_value = [
-            {
-                "name": "Simply Lift",
-                "email": "john@simplylift.co",
-                "points": "12"
-            },
             {
                 "name": "She Lifts",
                 "email": "kate@shelifts.co.uk",
