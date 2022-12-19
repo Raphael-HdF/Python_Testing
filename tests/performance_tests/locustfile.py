@@ -7,8 +7,8 @@ from server import loadClubs, loadCompetitions
 
 class PerformanceTest(HttpUser):
     wait_time = between(1, 5)
-    clubs = loadClubs()
-    competitions = loadCompetitions()
+    clubs = loadClubs()[:5]
+    competitions = loadCompetitions()[:5]
 
     def on_start(self):
         club = choice(self.clubs)
@@ -41,4 +41,4 @@ class PerformanceTest(HttpUser):
 
     @task()
     def club_points(self):
-        self.client.get("/club_points")
+        self.client.get("/club-points")
